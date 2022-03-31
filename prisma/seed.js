@@ -1,27 +1,48 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const { PrismaClient } = require("@prisma/client")
+const prisma = new PrismaClient()
 
 async function seed() {
-    const createdCustomer = await prisma.customer.create({
-        data: {
-            name: 'Alice'
-        }
-    });
+  const date = new Date(Date.parse("2022-10-01"))
 
-    console.log('Customer created', createdCustomer);
+  const createdCustomer = await prisma.customer.create({
+    data: {
+      name: "Alice",
+      contact: {
+        create: { phone: "0771715246", email: "alice@yahoo.com" },
+      },
+    },
+  })
 
-    // Add your code here
+  console.log("Customer created", createdCustomer)
 
+  // Add your code here
 
+  const createdMovie = await prisma.movie.create({
+    data: {
+      title: "Dark Knight",
+      runTimeMins: 145,
+      screening: {
+        create: [{ startsAt: date }],
+      },
+    },
+  })
 
+  console.log("Movie created", createdMovie)
 
-    // Don't edit any of the code below this line
-    process.exit(0);
+  //   const createdScreening = await prisma.screening.create({
+  //     data: {
+  //       startsAt: date,
+  //     },
+  //   })
+
+  //   console.log("Screening created", createdScreening)
+
+  // Don't edit any of the code below this line
+  process.exit(0)
 }
 
-seed()
-    .catch(async (error) => {
-        console.error(error);
-        await prisma.$disconnect();
-        process.exit(1);
-    })
+seed().catch(async (error) => {
+  console.error(error)
+  await prisma.$disconnect()
+  process.exit(1)
+})
