@@ -1,9 +1,7 @@
-const { PrismaClient } = require("@prisma/client")
-const prisma = new PrismaClient()
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
 
 async function seed() {
-  const date = new Date(Date.parse("2022-10-01"))
-
   const createdCustomer = await prisma.customer.create({
     data: {
       name: "Alice",
@@ -11,9 +9,9 @@ async function seed() {
         create: { phone: "0771715246", email: "alice@yahoo.com" },
       },
     },
-  })
+  });
 
-  console.log("Customer created", createdCustomer)
+  console.log("Customer created", createdCustomer);
 
   // Add your code here
 
@@ -21,28 +19,45 @@ async function seed() {
     data: {
       title: "Dark Knight",
       runTimeMins: 145,
-      screening: {
-        create: [{ startsAt: date }],
-      },
     },
-  })
+  });
 
-  console.log("Movie created", createdMovie)
+  console.log("Movie created", createdMovie);
 
-  //   const createdScreening = await prisma.screening.create({
-  //     data: {
-  //       startsAt: date,
-  //     },
-  //   })
+  const createdScreen = await prisma.screen.create({
+    data: {
+      number: 1,
+    },
+  });
 
-  //   console.log("Screening created", createdScreening)
+  console.log("Screen created", createdScreen);
+
+  const createdScreening = await prisma.screening.create({
+    data: {
+      startsAt: new Date(Date.parse("2022-10-01")),
+      movieId: createdMovie.id,
+      screenId: createdScreen.id,
+    },
+  });
+
+  console.log("Screening created", createdScreening);
+
+  const createdTicket = await prisma.ticket.create({
+    data: {
+      customerId: createdCustomer.id,
+      screeningId: createdScreening.id,
+    },
+  });
+
+
+  console.log("ticket created", createdTicket);
 
   // Don't edit any of the code below this line
-  process.exit(0)
+  process.exit(0);
 }
 
 seed().catch(async (error) => {
-  console.error(error)
-  await prisma.$disconnect()
-  process.exit(1)
-})
+  console.error(error);
+  await prisma.$disconnect();
+  process.exit(1);
+});
